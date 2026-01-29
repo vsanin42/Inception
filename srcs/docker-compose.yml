@@ -1,1 +1,22 @@
 services:
+  mariadb:
+    image: mariadb
+    build: ./requirements/mariadb
+    container_name: mariadb
+    env_file:
+      - path: ./.env
+        required: true
+    volumes:
+      -
+    networks:
+      - inception
+    pull_policy: never # if pulls from remote place above image
+    restart: unless-stopped
+
+volumes:
+
+
+networks:
+  inception:
+    name: inception
+    driver: bridge

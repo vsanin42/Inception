@@ -24,3 +24,9 @@ conditional only if folder is not initialized - first run.
 ## chmod 755 /run/mysqld
 entrypoint:
 ## mariadbd --user=mysql
+
+
+**add to services depending on mariadb health**
+depends_on:
+  mariadb:
+    condition: service_healthy
