@@ -7,14 +7,21 @@ services:
       - path: ./.env
         required: true
     volumes:
-      -
+      - db-volume:/var/lib/mysql
+    ports:
+      - "3306:3306" # testing, remove later, services will connect via network
     networks:
       - inception
-    pull_policy: never # if pulls from remote place above image
+    pull_policy: never # if pulls from remote - place above image
     restart: unless-stopped
 
 volumes:
-
+  db-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/vsanin/data/db-volume
 
 networks:
   inception:
