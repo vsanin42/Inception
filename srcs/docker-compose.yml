@@ -1,4 +1,23 @@
 services:
+
+  wordpress:
+    image: wordpress
+    build: ./requirements/wordpress
+    container_name: wordpress
+    env_file:
+      - path: ./.env
+        required: true
+    depends_on:
+      - mariadb:
+          condition: service_healthy
+    volumes:
+      - wp-volume:/var/www/html # ?
+    # ports: ?
+    networks:
+      - inception
+    pull_policy: never # if pulls from remote - place above image
+    restart: unless-stopped
+
   mariadb:
     image: mariadb
     build: ./requirements/mariadb
@@ -22,6 +41,12 @@ volumes:
       type: none
       o: bind
       device: /home/vsanin/data/db-volume
+  wp-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/vsanin/data/wp-volume
 
 networks:
   inception:
