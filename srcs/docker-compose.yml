@@ -8,8 +8,8 @@ services:
       - path: ./.env
         required: true
     depends_on:
-      - mariadb:
-          condition: service_healthy
+      mariadb:
+        condition: service_healthy
     volumes:
       - wp-volume:/var/www/html # ?
     # ports: ?
