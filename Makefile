@@ -2,41 +2,45 @@ WORKDIR = ./srcs
 VOLUMEDIR = /home/vsanin/data
 
 RESET=\033[0m
-RED=\033[31m
-GREEN=\033[32m
 YELLOW=\033[33m
-MAGENTA=\033[35m
-ORANGE=\033[38;5;208m
 BRED=\033[91m
 BGREEN=\033[92m
-BBLUE=\033[94m
-BMAGENTA=\033[95m
-BCYAN=\033[96m
-BOLD=\033[1m
 
 all: up
 
 up:
-	@echo "$(BGREEN)Creating directories for docker volumes in /home/vsanin/data...$(RESET)"
-	@mkdir -p $(VOLUMEDIR)/db-volume && mkdir -p $(VOLUMEDIR)/wp-volume
-	@echo "$(BGREEN)Running 'docker compose up'...$(RESET)"
+	@echo "$(BGREEN)Creating directories for docker volumes in /home/vsanin/data (if don't exist)... $(YELLOW)['mkdir -p /home/vsanin/data/<volume>']$(RESET)"
+	@mkdir -p $(VOLUMEDIR)/db-volume $(VOLUMEDIR)/wp-volume
+	@echo "$(BGREEN)Building images and starting containers (detached)... $(YELLOW)['docker compose up -d --build']$(RESET)"
 	@cd $(WORKDIR) && docker compose up -d --build
 
 down:
-	@echo "$(BRED)Running 'docker compose down'...$(RESET)"
+	@echo "$(BRED)Removing containers... $(YELLOW)['docker compose down']$(RESET)"
 	@cd $(WORKDIR) && docker compose down
 
-# todo rebuild? condition for creating dirs?
+build:
+	@echo "$(BGREEN)Building all images... $(YELLOW)['docker compose build']$(RESET)"
+	@cd $(WORKDIR) && docker compose build
 
-clean: down
+lsall:
+	@echo "$(BGREEN)Containers: $(YELLOW)['docker compose ps']$(RESET)"
+	@cd $(WORKDIR) && docker compose ps -a
+	@echo "$(BGREEN)Images: $(YELLOW)['docker image ls']$(RESET)"
+	@cd $(WORKDIR) && docker image ls
+	@echo "$(BGREEN)Volumes: $(YELLOW)['docker volume ls']$(RESET)"
+	@cd $(WORKDIR) && docker volume ls
+
+clean:
+	@echo "$(BRED)Removing containers and deleting compose volumes... $(YELLOW)['docker compose down -v --rmi local']$(RESET)"
+	@cd $(WORKDIR) && docker compose down -v --rmi local
 
 fclean: clean
-	@echo "$(BRED)Deleting images...$(RESET)"
-	@cd $(WORKDIR) && docker rmi -f $$(docker images -aq)
-	@echo "$(BRED)Deleting volumes...$(RESET)"
-	@cd $(WORKDIR) && docker volume rm db-volume && docker volume rm srcs_wp-volume
-	@cd $(VOLUMEDIR) && rm -rf .
+	@echo "$(BRED)Deleting local volumes... $(YELLOW)['rm -rf /home/vsanin/data']$(RESET)"
+	@sudo rm -rf $(VOLUMEDIR)
 
-re: fclean all
+re:
+	@echo "$(YELLOW)Rebuilding and restarting...$(RESET)"
+	$(MAKE) fclean
+	$(MAKE) up
 
-.PHONY: all up down clean fclean re
+.PHONY: all up down build ps clean fclean re

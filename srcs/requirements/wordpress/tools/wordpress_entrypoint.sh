@@ -1,40 +1,52 @@
 #!/bin/sh
 set -e
 
-mkdir -p /run/mysqld
-chown -R mysql:mysql /run/mysqld
-chmod 755 /run/mysqld
+cd /var/www/html
 
-mkdir -p /var/lib/mysql
-chown -R mysql:mysql /var/lib/mysql
-chmod 755 /var/lib/mysql
-
-if [ ! -d /var/lib/mysql/mysql ]; then
-	if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_USERPASS" ] || [ -z "$DB_ROOTPASS" ]; then
-		echo "Missing value(s) of variable(s), exiting"
-		exit 1
-	fi
-	echo "Initializing /var/lib/mysql - first time"
-	mariadb-install-db --user=mysql --datadir=/var/lib/mysql --socket=/run/mysqld/mysqld.sock
-
-	mariadbd --user=mysql --skip-networking --socket=/run/mysqld/mysqld.sock --datadir=/var/lib/mysql & # maybe: --socket=/run/mysqld/mysqld.sock --datadir=/var/lib/mysql
-	tmp_pid=$!
-
-	while ! mariadb-admin ping --socket=/run/mysqld/mysqld.sock >/dev/null 2>&1 ; do # > /dev/null 2>&1 to discard possible stdout/err messages
-		echo "Waiting for temporary mariadbd..."
-		sleep 1
-	done
-
-	mariadb --socket=/run/mysqld/mysqld.sock <<-EOSQL
-		CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
-		ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOTPASS}';
-		CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_USERPASS}';
-		GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';
-	EOSQL
-
-	kill "$tmp_pid"
-	wait "$tmp_pid"
-	echo "temp daemon ended with: $?"
+if	[ -z "$DOMAIN_NAME" ] || \
+	[ -z "$DB_HOST" ] || \
+	[ -z "$DB_NAME" ] || \
+	[ -z "$DB_USER" ] || \
+	[ -z "$DB_USERPASS" ] || \
+	[ -z "$WP_TITLE" ] || \
+	[ -z "$WP_ADMIN" ] || \
+	[ -z "$WP_ADMIN_PASS" ] || \
+	[ -z "$WP_ADMIN_EMAIL" ] || \
+	[ -z "$WP_USER" ] || \
+	[ -z "$WP_USER_PASS" ] || \
+	[ -z "$WP_USER_EMAIL" ]; then
+	echo "Missing value(s) of variable(s), exiting"
+	exit 1
 fi
 
-exec 
+while ! mariadb-admin ping -h "$DB_HOST" -u "$DB_USER" -p"$DB_USERPASS" >/dev/null 2>&1 ; do
+	echo "Waiting for mariadb..."
+	sleep 1
+done
+
+if [ ! -f /var/www/html/wp-config.php ]; then
+	echo "Wordpress config missing, creating..."
+	wp config create --allow-root \
+					 --dbhost="$DB_HOST" \
+					 --dbname="$DB_NAME" \
+					 --dbuser="$DB_USER" \
+					 --dbpass="$DB_USERPASS"
+	# wp db create
+fi
+
+if ! wp core is-installed --allow-root >/dev/null 2>&1; then
+	echo "Wordpress not installed, installing..."
+	wp core install --allow-root \
+					--url="$DOMAIN_NAME" \
+					--title="$WP_TITLE" \
+					--admin_user="$WP_ADMIN" \
+					--admin_email="$WP_ADMIN_EMAIL" \
+					--admin_password="$WP_ADMIN_PASS" \
+					--skip-email
+
+	wp user create --allow-root "$WP_USER" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS"
+fi
+
+chown -R www-data:www-data /var/www/html
+
+exec php-fpm83 -F

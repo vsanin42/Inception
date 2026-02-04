@@ -39,5 +39,4 @@ RUN chmod 755 -R /usr/local/bin && \
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
-CMD [ "php-fpm83", "-F" ]
-# ENTRYPOINT [ "/usr/local/bin/wordpress_entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/wordpress_entrypoint.sh" ]
