@@ -1,5 +1,24 @@
 services:
 
+  nginx:
+    image: nginx
+    build: ./requirements/nginx
+    container_name: nginx
+    env_file:
+      - path: ./.env
+        required: true # ?
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    volumes:
+      - wp-volume:/var/www/html
+    ports:
+      - "8080:8080" # ?
+    networks:
+      - inception
+    pull_policy: never
+    restart: unless-stopped
+
   wordpress:
     image: wordpress
     build: ./requirements/wordpress
@@ -12,8 +31,6 @@ services:
         condition: service_healthy
     volumes:
       - wp-volume:/var/www/html
-    ports:
-      - "8080:8080" # probably also don't publish this
     networks:
       - inception
     pull_policy: never

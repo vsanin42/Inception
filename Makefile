@@ -30,6 +30,10 @@ lsall:
 	@echo "$(BGREEN)Volumes: $(YELLOW)['docker volume ls']$(RESET)"
 	@cd $(WORKDIR) && docker volume ls
 
+logs:
+	@echo "$(BGREEN)Logs: $(YELLOW)['docker compose logs']$(RESET)"
+	@cd $(WORKDIR) && docker compose logs
+
 clean:
 	@echo "$(BRED)Removing containers and deleting compose volumes... $(YELLOW)['docker compose down -v --rmi local']$(RESET)"
 	@cd $(WORKDIR) && docker compose down -v --rmi local
