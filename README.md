@@ -1,93 +1,85 @@
+*This project has been created as part of the 42 curriculum by vsanin* 
+
 # Inception
+## Description
 
-## Commands
+This project demonstrates the creation of a small infrastructure composed of several services using Docker. Its goal was to deepen the knowledge of Docker, containerization, Unix administration, shell scripting and networking.
 
-*docker build -t mariadb .* - build a named docker image
-
-*docker run -it --rm <image>/mariadb sh* - drop into shell before container is created
-
-*docker exec -it <container> sh* - drop into shell after container is created and running
-
-*docker run -d --name mariadb -p 3306:3306 mariadb* - run as container in background once ready
-
-*docker logs -f mariadb* - logs
-
-*docker rm -f mariadb* - remove container, rmi = remove image
-
-*docker image prune* - remove all dangling images. If -a is specified, also remove all images not referenced by any container
-
-conditional only if folder is not initialized - first run.
-## mariadb-install-db --user=mysql --datadir=/var/lib/mysql
-
-## mkdir -p /run/mysqld
-## chown -R mysql:mysql /run/mysqld
-## chmod 755 /run/mysqld
-entrypoint:
-## mariadbd --user=mysql
+The infrastructure consists of MariaDB, WordPress (+ php-fpm) and Nginx, each running in a separate container. The running containers are connected internally via Docker network. The only entrypoint to the infrastructure is through Nginx server, acting as a reverse proxy, on port 443 (HTTPS).
 
 
-**add to services depending on mariadb health**
-depends_on:
-  mariadb:
-    condition: service_healthy
+## Instructions
+
+### Prerequisites
+
+### Installation
+
+### Running
+
+## Resources
+
+* Official Docker documentation: https://docs.docker.com/manuals/, https://docs.docker.com/reference/
+
+* Official Nginx documentation: https://nginx.org/en/docs/
+
+* Official Wordpress: https://developer.wordpress.org/
+
+* Official WP-CLI documentation: https://make.wordpress.org/cli/handbook/
+
+* Official MariaDB documentation: https://mariadb.com/docs/server
+
+* Other useful pages and articles:
+
+    * Bash scripting cheatsheet: https://devhints.io/
+
+    * Best practices for writing Dockerfiles: https://www.divio.com/blog/best-practices-writing-dockerfiles/
+
+    * Choosing between CMD and ENTRYPOINT: https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/
+
+    * Usage of OpenSSL: https://www.geeksforgeeks.org/linux-unix/practical-uses-of-openssl-command-in-linux/
+
+    * Alpine wiki: https://wiki.alpinelinux.org/wiki/Main_Page
+
+* YouTube videos:
+    
+    * Introduction: https://www.youtube.com/watch?v=Ud7Npgi6x8E
+
+    * Docker Compose: https://www.youtube.com/watch?v=HGKfE-cn9y4
+
+    * Full tutorial/crash course: https://www.youtube.com/watch?v=3c-iBn73dDE
 
 
-## docker compose up
-Start all services defined in docker-compose.yml in the foreground (logs attached).
+## Project description
 
-## docker compose up -d
-Start all services in detached (background) mode.
 
-## docker compose up --build
-Force rebuild of images before starting containers.
+### Virtual Machines vs Docker
 
-## docker compose down
-Stop and remove containers and networks created by Compose (keeps volumes).
 
-## docker compose down -v
-Stop and remove containers, networks, and named volumes (destroys persistent data).
+### Secrets vs Environment Variables
 
-## docker compose ps
-Show the status of services (running, exited, unhealthy, ports).
 
-## docker compose logs
-Show logs from all services.
+### Docker Network vs Host Network
 
-## docker compose logs -f
-Follow logs in real time.
 
-## docker compose logs -f mariadb
-Follow logs only for the mariadb service.
+### Docker Volumes vs Bind Mounts
 
-## docker compose exec mariadb sh
-Open a shell inside the running mariadb container.
 
-## docker compose exec mariadb mariadb -u root -p
-Connect to the MariaDB server from inside the container.
 
-## docker compose run mariadb sh
-Start a one-off mariadb container and open a shell (not the running one).
+## Tables
 
-## docker compose build
-Build or rebuild images without starting containers.
+| Left columns  | Right columns |
+| ------------- |:-------------:|
+| left foo      | right foo     |
+| left bar      | right bar     |
+| left baz      | right baz     |
 
-## docker compose config
-Print the fully resolved and validated Compose configuration.
+## Blocks of code
 
-## docker compose stop
-Stop running containers without removing them.
+```
+let message = 'Hello world';
+alert(message);
+```
 
-## docker compose start
-Start previously stopped containers.
+## Inline code
 
-## docker volume ls
-List all Docker volumes on the system.
-
-## docker volume inspect db-volume
-Show details about the named volume db-volume.
-
-## docker volume rm db-volume
-Remove the named volume db-volume (permanently deletes data).
-
-## docker compose ls
-List Compose projects and their current status.
+This web site is using `markedjs/marked`.

@@ -4,16 +4,13 @@ services:
     image: nginx
     build: ./requirements/nginx
     container_name: nginx
-    env_file:
-      - path: ./.env
-        required: true # ?
     depends_on:
       wordpress:
         condition: service_healthy
     volumes:
       - wp-volume:/var/www/html
     ports:
-      - "8080:8080" # ?
+      - "443:443"
     networks:
       - inception
     pull_policy: never
@@ -45,8 +42,6 @@ services:
         required: true
     volumes:
       - db-volume:/var/lib/mysql
-    ports:
-      - "3306:3306" # testing, remove later, services will connect via network
     networks:
       - inception
     pull_policy: never

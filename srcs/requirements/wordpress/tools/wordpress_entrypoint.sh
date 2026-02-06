@@ -31,7 +31,6 @@ if [ ! -f /var/www/html/wp-config.php ]; then
 					 --dbname="$DB_NAME" \
 					 --dbuser="$DB_USER" \
 					 --dbpass="$DB_USERPASS"
-	# wp db create
 fi
 
 if ! wp core is-installed --allow-root >/dev/null 2>&1; then
@@ -43,6 +42,9 @@ if ! wp core is-installed --allow-root >/dev/null 2>&1; then
 					--admin_email="$WP_ADMIN_EMAIL" \
 					--admin_password="$WP_ADMIN_PASS" \
 					--skip-email
+
+	wp option update home "https://vsanin.42.fr" --allow-root
+	wp option update siteurl "https://vsanin.42.fr" --allow-root
 
 	wp user create --allow-root "$WP_USER" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS"
 fi
