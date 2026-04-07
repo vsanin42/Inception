@@ -14,7 +14,8 @@ if	[ -z "$DOMAIN_NAME" ] || \
 	[ -z "$WP_ADMIN_EMAIL" ] || \
 	[ -z "$WP_USER" ] || \
 	[ -z "$WP_USER_PASS" ] || \
-	[ -z "$WP_USER_EMAIL" ]; then
+	[ -z "$WP_USER_EMAIL" ] || \
+	[ -z "$WP_PUBLIC_URL" ]; then
 	echo "Missing value(s) of variable(s), exiting"
 	exit 1
 fi
@@ -43,8 +44,8 @@ if ! wp core is-installed --allow-root >/dev/null 2>&1; then
 					--admin_password="$WP_ADMIN_PASS" \
 					--skip-email
 
-	wp option update home "https://vsanin.42.fr" --allow-root
-	wp option update siteurl "https://vsanin.42.fr" --allow-root
+	wp option update home "$WP_PUBLIC_URL" --allow-root
+	wp option update siteurl "$WP_PUBLIC_URL" --allow-root
 
 	wp user create --allow-root "$WP_USER" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS"
 fi

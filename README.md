@@ -30,7 +30,28 @@ Simply download the contents of the repository. **IMPORTANT:** several operation
 
 4. To ensure Nginx works with HTTPS protocol, a certificate and a private key must be provided. It is crucial to handle them with caution and never share them (i.e. don't commit to git). To conveniently generate a certificate and a private key, `openssl` tool can be used - more here: https://www.geeksforgeeks.org/linux-unix/practical-uses-of-openssl-command-in-linux/. The generated files (`.key` and `.pem`) must be placed in the `tools` directory under `nginx` directory. Then it is necessary to make sure the file names you chose at the generation match those in the Nginx Dockerfile and the `nginx_entrypoint.sh` script. If all is successful, upon connecting from a browser it is possible that a warning can be displayed: this is due to the certificate being self-signed (not issued by a trusted certificate authority), therefore the browser cannot verify the server, despite the connection being secure. It is safe to accept the warning and proceed, but only since this is a controlled environment.
 
-5. You must also provide your own credentials, database and website names in the form of an `.env` file. The required variables can be found in MariaDB and WordPress entrypoint scripts. Initialization of some containers will not complete unless all variables are assigned a value.
+5. You must also provide your own credentials, database and website names in the form of an `.env` file. The required variables can be found in MariaDB and WordPress entrypoint scripts. Initialization of some containers will not complete unless all variables are assigned a value. The following list of emptied variables can be filled and added to the `.env` file, which will be then ready for use once placed in the `srcs` directory:
+
+```
+DOMAIN_NAME=
+
+DB_HOST=
+DB_NAME=
+DB_USER=
+DB_USERPASS=
+DB_ROOTPASS=
+
+WP_TITLE=
+
+WP_ADMIN=
+WP_ADMIN_PASS=
+WP_ADMIN_EMAIL=
+
+WP_USER=
+WP_USER_PASS=
+WP_USER_EMAIL=
+WP_PUBLIC_URL=
+```
 
 ### Running
 
